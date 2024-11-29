@@ -4,11 +4,13 @@ import collections
 import torch
 import torch.nn as nn
 
-from resnet50 import MyResnet50
+from torchvision.models import resnet50, ResNet50_Weights
+
 from resnet_blocks import ResnetBlocks, Resnet1Blocks
 
 from EfficientNet_PyTorch.efficientnet_pytorch import EfficientNet, MBConvBlock
 
+MyResnet50 = resnet50(weights="IMAGENET1K_V2")
 
 class EFBlocks(nn.Module):
     """ EfficientNet Top Block """

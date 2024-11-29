@@ -11,6 +11,7 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 import cv2
+from torch.cuda import is_available
 
 from two_views_net import SideMIDBreastModel
 
@@ -36,17 +37,20 @@ def get_2views_model(model, model_file, device):
 
 def load_model(network, topology):
     """ load model structure and device """
-    if (DEVICE == "gpu") and torch.has_cudnn:
-        device = torch.device("cuda:{}".format(gpu_number))
+    if torch.cuda.is_available():
+      device = torch.device("cuda")
+      print(" GPU is available. Using ", torch.cuda.get_device_name(0))
     else:
-        device = torch.device("cpu")
+      device = torch.device("cpu")
+      print(" GPU not available. Using CPU ")
+
     if topology == 'side_mid_clf':
         model = SideMIDBreastModel(device, network, TOP_LAYER_N_BLOCKS,
                                    b_type=TOP_LAYER_BLOCK_TYPE, avg_pool=USE_AVG_POOL,
                                    strides=STRIDES)
     else:
         raise NotImplementedError(f"Net type error: {topology}")
-
+    
     model = model.to(device)
 
     return model, device
